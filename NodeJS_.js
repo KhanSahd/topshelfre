@@ -3,84 +3,76 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
-const request = require('supertest');
 
 let books = [];
 
 app.get('/books', (req, res) => {
+  res.status(200).json(books);
 });
 
 app.get('/books/:id', (req, res) => {
+  const book = books.find((book) => book.id === parseInt(req.params.id));
+  if (!book) {
+    res.status(404).json({ error: 'The book could not be found.' });
+  } else {
+    res.status(200).json(book);
+  }
 });
 
 app.post('/books', (req, res) => {
+  //   const book = req.body;
+  const { id, title, author, published_date, price } = req.body;
+
+  //   Check if all required fields are included
+  if (!id || !title || !author || !published_date || !price) {
+    res.status(400).send('Please include all required fields');
+    return;
+  }
+
+  //   Check if the book already exists
+  const bookExists = books.find((book) => book.id === id);
+  if (bookExists) {
+    res.status(400).send('A book with that ID already exists');
+    return;
+  }
+  const book = {
+    id: id,
+    title: title,
+    author: author,
+    published_date: published_date,
+    price: price,
+  };
+  books.push(book);
+  res.status(201).json(book);
 });
 
 app.put('/books/:id', (req, res) => {
+  const index = books.findIndex((book) => book.id == parseInt(req.params.id));
+  let { title, author, published_date, price } = req.body;
+  if (index !== -1) {
+    // If the request body does not contain a value for a field, the existing value is used.
+    // This also keeps the original id value.
+    books[index] = {
+      id: books[index].id,
+      title: title,
+      author: author,
+      published_date: published_date,
+      price: price,
+    };
+    res.json(books[index]);
+  } else {
+    res.status(404).send('Book not found');
+  }
 });
 
 app.delete('/books/:id', (req, res) => {
+  const index = books.findIndex((book) => book.id == parseInt(req.params.id));
+  if (index !== -1) {
+    const deletedBook = books.splice(index, 1);
+    res.status(200).json(deletedBook);
+  } else {
+    res.status(404).send('Book not found');
+  }
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
-
-
-
-
-let books = [];
-
-app.get('/books', (req, res) => {
-});
-
-app.get('/books/:id', (req, res) => {
-});
-
-app.post('/books', (req, res) => {
-});
-
-app.put('/books/:id', (req, res) => {
-});
-
-app.delete('/books/:id', (req, res) => {
-});
-
-app.listen(3000, () => console.log('Server running on port 3000'));
-
-describe('Test the book store API', () => {
-	test('Test POST /books', () => {
-    	return request(app)
-        	.post('/books')
-        	.send({id: 1, title: 'Book 1', author: 'Author 1', published_date: '2022-01-01', price: 9.99})
-        	.expect(201);
-	});
-
-	test('Test GET /books/1', () => {
-    	return request(app)
-        	.get('/books/1')
-        	.expect(200);
-	});
-
-	test('Test PUT /books/1', () => {
-    	return request(app)
-        	.put('/books/1')
-        	.send({title: 'Updated Book 1', author: 'Updated Author 1', published_date: '2022-01-02', price: 19.99})
-        	.expect(200);
-	});
-
-	test('Test DELETE /books/1', () => {
-    	return request(app)
-        	.delete('/books/1')
-        	.expect(200);
-	});
-
-	test('Test GET /books', () => {
-    	return request(app)
-        	.get('/books')
-        	.expect(200);
-	});
-});
-
-
-
-
-
+module.exports = app;

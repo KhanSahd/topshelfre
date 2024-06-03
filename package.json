@@ -1,0 +1,27 @@
+{
+  "name": "topshelfre",
+  "version": "1.0.0",
+  "description": "Dear enthusiastic candidate. Thank you for agreeing to take our assessment.",
+  "main": "NodeJS_.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KhanSahd/topshelfre.git#main"
+  },
+  "author": "Sahd Khan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KhanSahd/topshelfre/issues"
+  },
+  "homepage": "https://github.com/KhanSahd/topshelfre/tree/main#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
